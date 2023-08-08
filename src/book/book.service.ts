@@ -8,13 +8,25 @@ export class BookService {
     author: string;
     year: number;
   }[] = [
-    {
-      id: 1,
-      title: "Programming Book",
-      author: "Rayya Disayidan",
-      year: 2023,
-    },
-  ];
+      {
+        id: 1,
+        title: "Programming Book",
+        author: "Rayya Disayidan",
+        year: 2023,
+      },
+      {
+        id: 2,
+        title: "HTML CSS JavaScript Book",
+        author: "Rayya Disayidan",
+        year: 2023,
+      },
+      {
+        id: 3,
+        title: "Geographic Book",
+        author: "Rayya Disayidan",
+        year: 2023,
+      },
+    ];
 
   getAllBooks(): {
     id?: number;
@@ -25,28 +37,42 @@ export class BookService {
     return this.books;
   }
 
-  createBook(
-    title: string,
-    author: string,
-    year: number,
-  ): {
-    status: string;
-    message: string;
-  } {
+  // createBook(
+  //   title: string,
+  //   author: string,
+  //   year: number,
+  // ): {
+  //   status: string;
+  //   message: string;
+  // } {
+  //   this.books.push({
+  //     id: new Date().getTime(),
+  //     title: title,
+  //     author: author,
+  //     year: year,
+  //   });
+
+  //   return {
+  //     status: 'Success',
+  //     message: 'Berhasil menambakan buku',
+  //   };
+  // }
+  createBook(payload: any): { status: string, message: string } {
+    const { title, author, year } = payload;
     this.books.push({
-      id: new Date().getTime(),
+      id: this.books.length,
       title: title,
       author: author,
-      year: year,
+      year: year
     });
-
     return {
-      status: 'Success',
-      message: 'Berhasil menambakan buku',
-    };
+      status: 'oke',
+      message: 'berhasil'
+    }
   }
 
-  findBookById(id:number) :number {
+  private findBookById(id: number): number {
+    //Mencari Index berdasarkan id
     const bookIndex = this.books.findIndex((book) => book.id === id);
 
     if (bookIndex === -1) {
@@ -54,39 +80,36 @@ export class BookService {
     }
     return bookIndex;
   }
-
-  getDetail(id:number): {
-    id?:number;
-    title:string;
-    author:string;
-    year:number;
+  getDetail(id: number): {
+    id?: number;
+    title: string;
+    author: string;
+    year: number;
   } {
     const bookIndex = this.findBookById(id);
     const book = this.books[bookIndex];
     return book;
   }
-
   updateBook(
     id: number,
-    title:string,
-    author:string,
-    year:number,
-  ) : {
-    status:string;
-    message:string;
+    title: string,
+    author: string,
+    year: number,
+  ): {
+    status: string;
+    message: string;
   } {
     const bookIndex = this.books.findIndex((book) => book.id === id);
     this.books[bookIndex].title = title;
     this.books[bookIndex].author = author;
     this.books[bookIndex].year = year;
-    
     return {
       status: 'success',
       message: 'Berhasil update buku',
     }
   }
-  
-  deleteBook(id:number) : {
+
+  deleteBook(id: number): {
     status: string;
     message: string;
   } {
@@ -98,7 +121,4 @@ export class BookService {
       message: 'Berhasil menghapus buku',
     };
   }
-
-
-
 }

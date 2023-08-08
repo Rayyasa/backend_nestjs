@@ -4,25 +4,27 @@ import { title } from 'process';
 
 @Controller('book')
 export class BookController {
-  constructor(private bookService: BookService){}
+  constructor(private bookService: BookService) { }
 
   @Get("/list")
   findAllBook() {
     return this.bookService.getAllBooks();
   }
 
-  @Post('/create')
-  createBook(
-    @Body('title') title:string,
-    @Body('author') author:string,
-    @Body('year') year:number,
-  ) {
-    return this.bookService.createBook(title, author, year);
-  }
+  // @Post('/create')
+  // createBook(
+  //   @Body('title') title:string,
+  //   @Body('author') author:string,
+  //   @Body('year') year:number,
+  // ) {
+  //   return this.bookService.createBook(title, author, year);
+  // }
+
+
 
 
   @Get('detail/:id')
-  findOneBook(@Param('id') id:string) {
+  findBook(@Param('id') id: string) {
     return this.bookService.getDetail(Number(id));
   }
 
@@ -38,7 +40,12 @@ export class BookController {
   }
 
   @Delete('delete/:id')
-  deleteBook(@Param('id') id:string) {
+  deleteBook(@Param('id') id: string) {
     return this.bookService.deleteBook(+id);
+  }
+
+  @Post('/create')
+  createBook(@Body() payload: any) {
+    return this.bookService.createBook(payload)
   }
 }
