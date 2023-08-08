@@ -1,50 +1,68 @@
 import { Controller, Get, Param, Post, Put, Patch, Delete, Body, Query } from '@nestjs/common';
 import { query } from 'express';
+import { LatihanService } from './latihan.service';
 
 interface payloadDto {
   name: string;
   sekolah:string;
 }
 
+
+interface QueryLatihanDto {
+  name?:string;
+  age_start?:number;
+  age_end?:number;
+}
 @Controller('latihan')
 export class LatihanController {
- 
-//   @Get()
-//  findAll() {
-//   return `latihan menggunakan method GET`;
-//  }
+ constructor (private latihanService: LatihanService){}
 
- @Post()
- create(@Body() payload:any){
-  console.log('payload',payload);
-  return {
-    payload:payload,
-  };
- }
+  @Get('/list')
+  getLatihan() {
+    return this.latihanService.getLatihan();
+  }
+
+  @Get('/halo')
+  getHello() {
+    return this.latihanService.hello();
+  }
+
+  @Post('/test')
+  getAge() {
+    return this.latihanService.getAge();
+  }
+
+  @Post()
+  create(@Body() payload:any){
+    console.log('payload',payload);
+    return this.latihanService.hello();
+  }
+  
+
   @Post('create')
- create2(@Body() payload:payloadDto){
-  const {name, sekolah} = payload;
-  return {
-   method: "POST",
-    name,
+  create2(@Body() payload:payloadDto){
+    const {name, sekolah} = payload;
+    return {
+      method: "POST",
+      name,
     sekolah,
   };
- }
+}
 
- @Put('update/:id/:nama')
-  update(@Param('id') id:string, @Body() payload:payloadDto, @Param('nama') nama:string) {
-    return {
-      id:id,
-      nama:nama,
+@Put('update/:id/:nama')
+update(@Param('id') id:string, @Body() payload:payloadDto, @Param('nama') nama:string) {
+  return {
+    id:id,
+    nama:nama,
       payload:payload,
     };
   }
- 
+  
  @Patch() 
  patch() {
-  return `latihan menggunakan method Patch`;
- }
-
+   return `latihan menggunakan method Patch`;
+  }
+  
   @Delete('delete/:id')
   hapus(@Param('id') id:string) {
     return {
@@ -52,7 +70,7 @@ export class LatihanController {
       id,
     };
   }
-
+  
   @Get()
   findAll(@Query() query:any) {
     return {
@@ -71,5 +89,8 @@ export class LatihanController {
       },
     };
   } 
-
+  //   @Get()
+  //  findAll() {
+  //   return `latihan menggunakan method GET`;
+  //  }
 }
