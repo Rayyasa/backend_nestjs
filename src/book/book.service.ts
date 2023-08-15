@@ -92,14 +92,13 @@ export class BookService {
   }
   updateBook(
     id: number,
-    title: string,
-    author: string,
-    year: number,
+    payload:any,
   ): {
     status: string;
     message: string;
   } {
-    const bookIndex = this.books.findIndex((book) => book.id === id);
+    const bookIndex = this.findBookById(id);
+    const {title, author , year} = payload;
     this.books[bookIndex].title = title;
     this.books[bookIndex].author = author;
     this.books[bookIndex].year = year;
@@ -121,4 +120,15 @@ export class BookService {
       message: 'Berhasil menghapus buku',
     };
   }
+
+
+  // updateBook(): {status:string; message: string} {
+  //   return{
+  //     status: 'Oke',
+  //     message: 'Berhasil mempebaharui buku'
+  //   }
+  // }
+
+
+
 }

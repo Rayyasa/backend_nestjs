@@ -29,15 +29,25 @@ export class BookController {
   }
 
 
+  // @Put('update/:id')
+  // updateBook(
+  //   @Param('id') id: string,
+  //   @Body('title') title: string,
+  //   @Body('author') author: string,
+  //   @Body('year') year: number,
+  // ) {
+  //   return this.bookService.updateBook(Number(id), title, author, year);
+  // }
+
   @Put('update/:id')
   updateBook(
-    @Param('id') id: string,
-    @Body('title') title: string,
-    @Body('author') author: string,
-    @Body('year') year: number,
+    @Param('id') id:string,
+    @Body() payload: any
   ) {
-    return this.bookService.updateBook(Number(id), title, author, year);
+    return this.bookService.updateBook(Number(id), payload)
   }
+
+
 
   @Delete('delete/:id')
   deleteBook(@Param('id') id: string) {
