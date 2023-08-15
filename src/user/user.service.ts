@@ -47,7 +47,7 @@ export class UserService {
     return this.users;
   }
 
-  createUsers(payload: any): {status: string, message :string}{
+  createUsers(payload: any): { status: string, message: string } {
     const { id,
       nama,
       email,
@@ -55,38 +55,38 @@ export class UserService {
       tanggal_lahir,
       status } = payload;
 
-      this.users.push({
-        id: this.users.length,
-        nama,
-        email,
-        umur,
-        tanggal_lahir,
-        status,
-      });
+    this.users.push({
+      id: this.users.length,
+      nama,
+      email,
+      umur,
+      tanggal_lahir,
+      status,
+    });
 
-      return{
-        status: 'Success',
-        message: 'Sukses menambahkan User!'
-      }
+    return {
+      status: 'Success',
+      message: 'Sukses menambahkan User!'
+    }
   }
 
 
- private findUsersById(id:number) :number {
+  private findUsersById(id: number): number {
     const usersIndex = this.users.findIndex((user) => user.id === id);
 
-  if(usersIndex === -1) {
-    throw new NotFoundException(`User dengan id ${id} tidak ditemukan`);
-  }
+    if (usersIndex === -1) {
+      throw new NotFoundException(`User dengan id ${id} tidak ditemukan`);
+    }
     return usersIndex;
   }
 
-  getDetail(id:number):{
-  id: number;
-  nama:string;
-  email:string;
-  umur: number;
-  tanggal_lahir: string;
-  status: string;
+  getDetail(id: number): {
+    id: number;
+    nama: string;
+    email: string;
+    umur: number;
+    tanggal_lahir: string;
+    status: string;
   } {
     const userIndex = this.findUsersById(id);
     const user = this.users[userIndex];
@@ -94,9 +94,9 @@ export class UserService {
     return user;
   }
 
-  updateUser(id:number, payload:any) : {status: string, message :string} {
+  updateUser(id: number, payload: any): { status: string, message: string } {
     const userIndex = this.findUsersById(id);
-    const  {
+    const {
       nama,
       email,
       umur,
@@ -107,7 +107,7 @@ export class UserService {
     this.users[userIndex].umur = umur;
     this.users[userIndex].tanggal_lahir = tanggal_lahir;
     this.users[userIndex].status = status;
-    
+
     return {
       status: "succes",
       message: "Berhasil Mengupdate user!",
@@ -124,11 +124,11 @@ export class UserService {
   // }
 
 
-    deleteUsers(id:number) : {status: string, message :string} {
-      this.users =  this.users.filter(user => user.id !== id);
-      return {
-        status: 'Success',
-        message: 'Berhasil menghapus User!',
-      }
+  deleteUsers(id: number): { status: string, message: string } {
+    this.users = this.users.filter(user => user.id !== id);
+    return {
+      status: 'Success',
+      message: 'Berhasil menghapus User!',
     }
+  }
 }
