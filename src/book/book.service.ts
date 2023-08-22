@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
+import { ResponseSuccess } from './interface';
+import { createBookDto } from './book.dto';
 @Injectable()
 export class BookService {
   private books: {
@@ -28,13 +29,12 @@ export class BookService {
       },
     ];
 
-  getAllBooks(): {
-    id?: number;
-    title: string;
-    author: string;
-    year: number;
-  }[] {
-    return this.books;
+  getAllBooks(): ResponseSuccess {
+    return  {
+      status :'Success',
+      message: 'Buku Founded!',
+      data: this.books,
+    }
   }
 
   // createBook(
@@ -57,8 +57,8 @@ export class BookService {
   //     message: 'Berhasil menambakan buku',
   //   };
   // }
-  createBook(payload: any): { status: string, message: string } {
-    const { title, author, year } = payload;
+  createBook(createBookDto : createBookDto): ResponseSuccess {
+    const { title, author, year } = createBookDto;
     this.books.push({
       id: this.books.length,
       title: title,
@@ -80,23 +80,19 @@ export class BookService {
     }
     return bookIndex;
   }
-  getDetail(id: number): {
-    id?: number;
-    title: string;
-    author: string;
-    year: number;
-  } {
+  getDetail(id: number): ResponseSuccess {
     const bookIndex = this.findBookById(id);
     const book = this.books[bookIndex];
-    return book;
+    return {
+      status: 'Success',
+      message: 'Data Buku ditemukan!',
+      data: book,
+    };
   }
   updateBook(
     id: number,
     payload:any,
-  ): {
-    status: string;
-    message: string;
-  } {
+  ): ResponseSuccess{
     const bookIndex = this.findBookById(id);
     const {title, author , year} = payload;
     this.books[bookIndex].title = title;
@@ -108,10 +104,7 @@ export class BookService {
     }
   }
 
-  deleteBook(id: number): {
-    status: string;
-    message: string;
-  } {
+  deleteBook(id: number): ResponseSuccess {
     const bookIndex = this.findBookById(id);
     this.books.splice(bookIndex, 1);
 

@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
+import { ResponseSuccess } from 'src/book/interface';
+import { createBookDto, updateBookDto } from 'src/book/book.dto';
+import { createUserDto, updateUserDto } from './user.dto';
 @Injectable()
 export class UserService {
   private users: {
@@ -47,13 +49,13 @@ export class UserService {
     return this.users;
   }
 
-  createUsers(payload: any): { status: string, message: string } {
+  createUsers(createUserDto:createUserDto): ResponseSuccess {
     const { id,
       nama,
       email,
       umur,
       tanggal_lahir,
-      status } = payload;
+      status } = createUserDto;
 
     this.users.push({
       id: this.users.length,
@@ -94,14 +96,14 @@ export class UserService {
     return user;
   }
 
-  updateUser(id: number, payload: any): { status: string, message: string } {
+  updateUser(id: number, updateUserDto:updateUserDto): ResponseSuccess{
     const userIndex = this.findUsersById(id);
     const {
       nama,
       email,
       umur,
       tanggal_lahir,
-      status } = payload;
+      status } = updateUserDto;
     this.users[userIndex].nama = nama;
     this.users[userIndex].email = email;
     this.users[userIndex].umur = umur;
@@ -124,7 +126,7 @@ export class UserService {
   // }
 
 
-  deleteUsers(id: number): { status: string, message: string } {
+  deleteUsers(id: number): ResponseSuccess {
     this.users = this.users.filter(user => user.id !== id);
     return {
       status: 'Success',
