@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseSuccess } from 'src/book/interface';
-import { createBookDto, updateBookDto } from 'src/book/book.dto';
 import { createUserDto, updateUserDto } from './user.dto';
 @Injectable()
 export class UserService {
