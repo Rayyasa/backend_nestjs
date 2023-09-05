@@ -5,7 +5,8 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   port: 3306,
   username: "root",
   password: "",
-  database: "dasar_database",
+  database: "belajar_nestjs_kelas_xi",
   entities: ["dist/**/*.entity{.ts,.js}"],
   synchronize: true,
+  logging: true,
 };

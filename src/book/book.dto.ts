@@ -1,5 +1,6 @@
 import { OmitType, PickType } from "@nestjs/mapped-types";
-import { IsInt, IsNotEmpty, Min, Max, Length } from "class-validator";
+import { IsInt, IsNotEmpty, Min, Max, Length, IsArray, ValidateNested} from "class-validator";
+import {Type} from 'class-transformer';
 export class BookDto {
   id: number;
   
@@ -19,3 +20,9 @@ export class BookDto {
 
 export class createBookDto extends OmitType(BookDto, ["id"]) {}
 export class updateBookDto extends PickType(BookDto, ["title", 'author', 'year']) {}
+export class createBookArrayDto {
+  @IsArray()
+  @ValidateNested({each:true})
+  @Type(() => createBookDto)
+  data:createBookDto[];
+}
