@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseSuccess } from './interface';
-import { createBookDto } from './book.dto';
+import { createBookArrayDto, createBookDto, updateBookDto } from './book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './book.entity';
 import { Repository } from 'typeorm';
@@ -109,63 +109,105 @@ export class BookService {
   //   }
   // }
 
-  private findBookById(id: number): number {
-    //Mencari Index berdasarkan id
-    const bookIndex = this.books.findIndex((book) => book.id === id);
+  // private findBookById(id: number): number {
+  //   //Mencari Index berdasarkan id
+  //   const bookIndex = this.books.findIndex((book) => book.id === id);
 
-    if (bookIndex === -1) {
-      throw new NotFoundException(`Buku dengan id ${id} tidak ditemukan`);
-    }
-    return bookIndex;
-  }
+  //   if (bookIndex === -1) {
+  //     throw new NotFoundException(`Buku dengan id ${id} tidak ditemukan`);
+  //   }
+  //   return bookIndex;
+  // }
+
+
  async getDetail(id: number): Promise <ResponseSuccess>{
-    const bookIndex = this.findBookById(id);
-    const detailbook = await this.bookRepository.findOne({
+    const book = await this.bookRepository.findOne({
       where: {
         id,
       },
     });
-    if(detailbook === null) {
-      throw new NotFoundException(`Buku dengan id ${id} tidal ditemukan`)
+
+    console.log(book);
+
+    if(book === null) {
+      throw new NotFoundException(`Buku dengan id ${id} tidak ditemukan`)
     }
     return {
       status: 'Success',
       message: 'Data Buku ditemukan!',
-      data: detailbook,
+      data: book,
     };
   }
-  updateBook(
+
+
+  async updateBook(
     id: number,
-    payload: any,
-  ): ResponseSuccess {
-    const bookIndex = this.findBookById(id);
-    const { title, author, year } = payload;
-    this.books[bookIndex].title = title;
-    this.books[bookIndex].author = author;
-    this.books[bookIndex].year = year;
+    updateBookDto:updateBookDto,
+  ):Promise <ResponseSuccess> {
+    const check = await this.bookRepository.findOne({
+      where: {
+        id : id,
+      },
+    });
+
+    if(!check) {
+      throw new NotFoundException(`Buku dengan id ${id} tidak ditemukan`);
+    }
+
+    const update = await this.bookRepository.save({...updateBookDto, id:id});
     return {
       status: 'success',
       message: 'Berhasil update buku',
+      data: update,
     }
   }
 
-  deleteBook(id: number): ResponseSuccess {
-    const bookIndex = this.findBookById(id);
-    this.books.splice(bookIndex, 1);
+ async deleteBook(id: number):Promise <ResponseSuccess> {
+  const check = await this.bookRepository.findOne({
+    where: {
+      id : id,
+    },
+  });
+
+  if(!check) {
+    throw new NotFoundException(`Buku dengan id ${id} tidak ditemukan`);
+  }
+
+  await this.bookRepository.delete(id)
 
     return {
-      status: `Succes ${bookIndex}`,
+      status: `Succes`,
       message: 'Berhasil menghapus buku',
     };
   }
 
+  private _success(message: string, data?: any): ResponseSuccess {
+    return {
+      status: 'Success',
+      message: message,
+      data: data,
+    };
+  }
 
-  // updateBook(): {status:string; message: string} {
-  //   return{
-  //     status: 'Oke',
-  //     message: 'Berhasil mempebaharui buku'
-  //   }
-  // }
+  async bulkCreate(payload: createBookArrayDto) : Promise <ResponseSuccess> {
+    try {
+      let berhasil = 0;
+      let gagal = 0;
+      await Promise.all(
+        payload.data.map(async (data) => {
+          try {
+            await this.bookRepository.save(data);
+            berhasil += 1;
+          } catch {
+            gagal += 1;
+          }
+        }),
+      ); 
+      return this._success(`Berhasil menyimpan ${berhasil} dan gagal ${gagal}`);
+    } catch {
+      throw new HttpException('ada kesalahan', HttpStatus.BAD_REQUEST)
+    }
+  }
 
 
 

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BookService } from './book.service';
 import { title } from 'process';
-import { createBookDto, updateBookDto } from './book.dto';
+import { createBookArrayDto, createBookDto, updateBookDto } from './book.dto';
 @Controller('book')
 export class BookController {
   constructor(private bookService: BookService) { }
@@ -24,7 +24,7 @@ export class BookController {
 
 
   @Get('detail/:id')
-  findBook(@Param('id') id: string) {
+  findOneBook(@Param('id') id: string) {
     return this.bookService.getDetail(Number(id));
   }
 
@@ -59,4 +59,12 @@ export class BookController {
   createBook(@Body() payload: createBookDto) {
     return this.bookService.createBook(payload)
   }
+
+  @Post('/create/bulk')
+  bulkCreateBook(@Body() payload: createBookArrayDto) {
+    return this.bookService.bulkCreate(payload);
+  }
+
+
+
 }

@@ -20,7 +20,7 @@ export class UserController {
 
   @Get('detail/:id')
   findOneUsers(@Param('id') id:string) {
-    return this.userService.getDetail(+id);
+    return this.userService.getDetail(Number(id));
   }
 
   @Put('update/:id')
