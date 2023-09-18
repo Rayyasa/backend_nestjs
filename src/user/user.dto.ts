@@ -1,5 +1,6 @@
 import { OmitType, PickType } from "@nestjs/mapped-types";
-import { IsInt, IsNotEmpty, Min, Max, Length, IsNumber, IsEmail } from "class-validator";
+import { Type } from "class-transformer";
+import { IsInt, IsNotEmpty, Min, Max, Length, IsNumber, IsEmail, IsArray, ValidateNested, ArrayNotEmpty } from "class-validator";
 export class UserDto {
   status: string;
   
@@ -25,3 +26,14 @@ export class UserDto {
 
 export class createUserDto extends PickType(UserDto, ["id", "email", "nama", "status", "tanggal_lahir", "umur"]) {}
 export class updateUserDto extends PickType(UserDto, ["id", "email", "nama", "status", "tanggal_lahir", "umur"]) {}
+export class createUserArrayDto {
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => createUserDto)
+  data: createUserDto[];
+}
+export class DeleteUserArrayDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  data: [];
+}

@@ -5,13 +5,16 @@ export class Book extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   title: string;
 
   @Column()
   author: string;
 
-  @Column({default: 2022})
+  @Column({ nullable: true })
+  deskripsi: string;
+
+  @Column({ default: 2022 })
   year: number;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })

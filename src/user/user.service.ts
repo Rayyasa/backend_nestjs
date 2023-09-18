@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException,HttpException,HttpStatus } from '@nestjs/common';
 import { ResponseSuccess } from 'src/book/interface';
-import { createUserDto, updateUserDto } from './user.dto';
+import { createUserDto, updateUserDto,createUserArrayDto,DeleteUserArrayDto } from './user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -10,42 +10,6 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-
-
-  // private users: {
-  //   id: number,
-  //   nama: string,
-  //   email: string,
-  //   umur: number,
-  //   tanggal_lahir: string,
-  //   status: string
-  // }[] = [
-  //     {
-  //       id: 1,
-  //       nama: "Rayya",
-  //       email: "Rayya.a192018@gmail.com",
-  //       umur: 16,
-  //       tanggal_lahir: "16 November 2006",
-  //       status: "Murid",
-  //     },
-  //     {
-  //       id: 2,
-  //       nama: "Dobleh",
-  //       email: "admwaihdiuqw@gmail.com",
-  //       umur: 16,
-  //       tanggal_lahir: "17 Agustus 2006",
-  //       status: "Murid",
-  //     },
-  //     {
-  //       id: 3,
-  //       nama: "Udin",
-  //       email: "awdumuqddaijs@gmail.com",
-  //       umur: 16,
-  //       tanggal_lahir: "18 September 2006",
-  //       status: "Murid",
-  //     },
-  //   ]
-
  async getUsers(): Promise <ResponseSuccess> {
   const user = await this.userRepository.find();
   return {
@@ -133,4 +97,59 @@ export class UserService {
       message: 'Berhasil menghapus User',
     };
   }
+
+  async bulkCreate(payload: createUserArrayDto) : Promise <ResponseSuccess> {
+    try {
+      let berhasil = 0;
+      let gagal = 0;
+      await Promise.all (
+        payload.data.map(async (item) => {
+          try {
+            await this.userRepository.save(item);
+            berhasil += 1;
+          } catch {
+           gagal +=1;
+          }
+        })
+      )
+      return {
+        status: 'Ok',
+        message: `Berhasil menambahkan user sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,
+        data: payload
+      }
+    } catch {
+      throw new HttpException('Ada kesalahan', HttpStatus.BAD_REQUEST)
+    }
+  };
+  async bulkDelete(payload: DeleteUserArrayDto) : Promise <ResponseSuccess> {
+    try {
+      let success = 0;
+      let fail = 0;
+      await Promise.all (
+        payload.data.map(async (item) => {
+          try {
+         const result =   await this.userRepository.delete(item);
+
+         if(result.affected === 0) {
+          fail = fail + 1;
+         } else {
+           success = success + 1;
+         }
+          } catch {
+            fail = fail + 1;
+          }
+        })
+      )
+      return {
+        status: 'Ok',
+        message: `Berhasil menghapus user sebanyak ${success} dan gagal sebanyak ${fail}`,
+        data: payload
+      }
+    } catch {
+      throw new HttpException('Ada kesalahan', HttpStatus.BAD_REQUEST)
+    }
+  };
+
+
+
 }
