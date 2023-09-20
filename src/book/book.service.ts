@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { ResponseSuccess } from './interface';
-import { createBookArrayDto, createBookDto, updateBookDto, DeleteBooksDto, deleteBookDto } from './book.dto';
+import { ResponsePagination, ResponseSuccess } from './interface';
+import { createBookArrayDto, createBookDto, updateBookDto, DeleteBooksDto, deleteBookDto, FindBookDto } from './book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './book.entity';
-import { Repository } from 'typeorm';
+import { Between, Like, Repository } from 'typeorm';
 @Injectable()
 export class BookService {
 
@@ -11,12 +11,53 @@ export class BookService {
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
   ) { }
 
-  async getAllBooks(): Promise<ResponseSuccess> {
-    const book = await this.bookRepository.find();
+  async getAllBooks(findBookDto: FindBookDto): Promise<ResponsePagination> {
+    const { page, pageSize, title, author, from_year, to_year } = findBookDto;
+    
+    
+    const filter: {
+      [key: string]: any;
+    } = {};
+
+    if (title) {
+      filter.title = Like(`%${title}%`);
+    }
+    if (author) {
+      filter.author = Like(`%${author}%`);
+    }
+
+    if (from_year && to_year) {
+      filter.year = Between(from_year, to_year);
+    }
+
+    if (from_year && !!to_year === false) {
+      filter.year = Between(from_year, from_year);
+    }
+
+    const total = await this.bookRepository.count(
+      {
+        where:filter
+      }
+    );
+    
+    const result = await this.bookRepository.find({
+      where:filter,
+      skip: (Number(page) - 1) * Number(pageSize),
+      take: Number(pageSize),
+    });
+
+    const total_page = Math.ceil(total / pageSize);
     return {
       status: 'Success',
       message: 'Buku Founded!',
-      data: book,
+      data: result,
+      pagination: {
+        total: total,
+        page: Number(page),
+        pageSize: Number(pageSize),
+        total_page: total_page,
+        remaining_page: total_page - Number(page)
+      }
     }
   }
 
