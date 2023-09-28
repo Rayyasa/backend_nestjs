@@ -1,6 +1,7 @@
 import { OmitType, PickType } from "@nestjs/mapped-types";
 import { Type } from "class-transformer";
-import { IsInt, IsNotEmpty, Min, Max, Length, IsNumber, IsEmail, IsArray, ValidateNested, ArrayNotEmpty } from "class-validator";
+import { IsInt, IsNotEmpty, Min, Max, Length, IsNumber, IsEmail, IsArray, ValidateNested, ArrayNotEmpty, IsOptional } from "class-validator";
+import { PageRequestDto } from "src/utils/dto/page.dto";
 export class UserDto {
   status: string;
   
