@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsInt } from "class-validator";
+import { IsInt, IsOptional } from "class-validator";
 
 export class PageRequestDto {
   @IsInt()
@@ -9,4 +9,8 @@ export class PageRequestDto {
   @IsInt()
   @Type(() => Number)
   pageSize = 10;
+
+  @IsInt()
+  @IsOptional()
+  limit;
 }

@@ -12,7 +12,7 @@ export class BookService {
   ) { }
 
   async getAllBooks(findBookDto: FindBookDto): Promise<ResponsePagination> {
-    const { page, pageSize, title, author, from_year, to_year } = findBookDto;
+    const { page, pageSize, title, author, from_year, to_year, limit } = findBookDto;
     
     
     const filter: {
@@ -42,7 +42,7 @@ export class BookService {
     
     const result = await this.bookRepository.find({
       where:filter,
-      skip: (Number(page) - 1) * Number(pageSize),
+      skip: limit,
       take: Number(pageSize),
     });
 

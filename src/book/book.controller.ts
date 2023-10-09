@@ -2,12 +2,14 @@ import { Body, Controller, Delete, Get, Param, Post, Put, UsePipes, ValidationPi
 import { BookService } from './book.service';
 import { title } from 'process';
 import { DeleteBooksDto, createBookArrayDto, createBookDto, FindBookDto, updateBookDto } from './book.dto';
+import { Pagination } from 'src/utils/decorator/pagination.decorator';
 @Controller('book')
 export class BookController {
   constructor(private bookService: BookService) { }
 
   @Get("/list")
-  findAllBook(@Query() findBookDto:FindBookDto)  {
+  findAllBook(@Pagination() findBookDto:FindBookDto)  {
+    console.log(findBookDto);
     return this.bookService.getAllBooks(findBookDto);
   }
 
