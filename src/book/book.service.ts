@@ -4,12 +4,15 @@ import { createBookArrayDto, createBookDto, updateBookDto, DeleteBooksDto, delet
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './book.entity';
 import { Between, Like, Repository } from 'typeorm';
+import BaseResponse from 'src/utils/response/base.response';
 @Injectable()
-export class BookService {
+export class BookService extends BaseResponse {
 
   constructor(
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
-  ) { }
+  ) {
+    super()
+   }
 
   async getAllBooks(findBookDto: FindBookDto): Promise<ResponsePagination> {
     const { page, pageSize, title, author, from_year, to_year, limit } = findBookDto;
@@ -47,18 +50,20 @@ export class BookService {
     });
 
     const total_page = Math.ceil(total / pageSize);
-    return {
-      status: 'Success',
-      message: 'Buku Founded!',
-      data: result,
-      pagination: {
-        total: total,
-        page: Number(page),
-        pageSize: Number(pageSize),
-        total_page: total_page,
-        remaining_page: total_page - Number(page)
-      }
-    }
+    // return {
+    //   status: 'Success',
+    //   message: 'Buku Founded!',
+    //   data: result,
+    //   pagination: {
+    //     total: total,
+    //     page: Number(page),
+    //     pageSize: Number(pageSize),
+    //     total_page: total_page,
+    //     remaining_page: total_page - Number(page)
+    //   }
+    // }
+    const remaining_page = total_page- Number(page)
+    return this._Pagination('Buku ditemukan!',result,total,page,pageSize,total_page,remaining_page)
   }
 
 
@@ -71,10 +76,7 @@ export class BookService {
         author: author,
         year: year,
       });
-      return {
-        status: 'Oke',
-        message: 'Berhasil menambahkan buku',
-      }
+      return this._Success('Berhasil membuat buku')
     } catch (err) {
       throw new HttpException('Ada kesalahan', HttpStatus.BAD_REQUEST)
     }
@@ -92,11 +94,14 @@ export class BookService {
     if (book === null) {
       throw new NotFoundException(`Buku dengan id ${id} tidak ditemukan`)
     }
-    return {
-      status: 'Success',
-      message: 'Data Buku ditemukan!',
-      data: book,
-    };
+    // return {
+    //   status: 'Success',
+    //   message: 'Data Buku ditemukan!',
+    //   data: book,
+    // };
+
+
+    return this._Success('Data buku ditemukan',book)
   }
 
 
@@ -115,11 +120,13 @@ export class BookService {
     }
 
     const update = await this.bookRepository.save({ ...updateBookDto, id: id });
-    return {
-      status: 'success',
-      message: 'Berhasil update buku',
-      data: update,
-    }
+    // return {
+    //   status: 'success',
+    //   message: 'Berhasil update buku',
+    //   data: update,
+      // }
+
+      return this._Success('Berhasil mengupdate Buku',update)
   }
 
   async deleteBook(id: number): Promise<ResponseSuccess> {
@@ -135,10 +142,7 @@ export class BookService {
 
     await this.bookRepository.delete(id)
 
-    return {
-      status: `Success`,
-      message: 'Berhasil menghapus buku',
-    };
+    return this._Success('Berhasil menghapus Buku!')
   }
 
   async bulkCreate(payload: createBookArrayDto): Promise<ResponseSuccess> {
@@ -155,11 +159,12 @@ export class BookService {
           }
         })
       )
-      return {
-        status: 'Ok',
-        message: `Berhasil menambahkan buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,
-        data: payload
-      }
+      // return {
+      //   status: 'Ok',
+      //   message: `Berhasil menambahkan buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,
+      //   data: payload
+      // }
+      return this._Success(`Berhasil menambahkan buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,payload)
     } catch {
       throw new HttpException('ada kesalahan', HttpStatus.BAD_REQUEST)
     }
@@ -187,11 +192,12 @@ export class BookService {
           }
         })
       )
-      return {
-        status: 'Ok',
-        message: `Berhasil menghapus buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,
-        data: payload
-      }
+      // return {
+      //   status: 'Ok',
+      //   message: `Berhasil menghapus buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,
+      //   data: payload
+      // }
+      return this._Success(`Berhasil menghapus buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`, payload)
     } catch {
       throw new HttpException('ada kesalahan', HttpStatus.BAD_REQUEST)
     }
