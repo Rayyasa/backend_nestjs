@@ -51,6 +51,4 @@ export class FindBookDto extends PageRequestDto{
   @IsInt()
   @Type(() => Number)
   to_year: number;
-
-
 }

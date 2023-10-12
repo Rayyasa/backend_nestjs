@@ -1,6 +1,6 @@
 import { OmitType, PickType } from "@nestjs/mapped-types";
 import { Type } from "class-transformer";
-import { IsInt, IsNotEmpty, Min, Max, Length, IsNumber, IsEmail, IsArray, ValidateNested, ArrayNotEmpty, IsOptional } from "class-validator";
+import { IsInt, IsNotEmpty, Min, Max, Length, IsNumber, IsEmail, IsArray, ValidateNested, ArrayNotEmpty, IsOptional, IsIn } from "class-validator";
 import { PageRequestDto } from "src/utils/dto/page.dto";
 export class UserDto {
   status: string;
@@ -37,4 +37,25 @@ export class DeleteUserArrayDto {
   @IsArray()
   @ArrayNotEmpty()
   data: [];
+}
+
+export class FindUserDto extends PageRequestDto {
+  @IsOptional()
+  @IsInt()
+  id:number;
+
+  @IsOptional()
+  nama:string
+  
+  @IsOptional()
+  @IsInt()
+  @Max(30)
+  umur:number
+
+  @IsOptional()
+  tanggal_lahir:string;
+
+  @IsOptional()
+  email:string;
+
 }
