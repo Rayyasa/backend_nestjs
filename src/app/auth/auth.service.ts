@@ -10,4 +10,5 @@ import { hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService extends BaseResponse {
+  
  }
