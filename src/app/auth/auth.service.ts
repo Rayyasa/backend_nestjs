@@ -4,8 +4,8 @@ import BaseResponse from 'src/utils/response/base.response';
 import { User } from './auth.entity';
 import { Repository } from 'typeorm';
 import { ResponseSuccess } from 'src/interface';
-import { RegisterDto } from './auth.dto';
-import { hash } from 'bcrypt';
+import { LoginDto, RegisterDto } from './auth.dto';
+import { compare, hash } from 'bcrypt';
 
 
 @Injectable()
@@ -32,5 +32,38 @@ await this.authRepository.save(payload);
 
     return this._Success("Register Berhasil");
   }
+  async login(payload: LoginDto): Promise<ResponseSuccess> {
+    const checkUserExists = await this.authRepository.findOne({
+      where: {
+        email: payload.email,
+      },
+      select: {
+        id: true,
+        nama: true,
+        email: true,
+        password: true,
+        refresh_token: true,
+      },
+    });
 
- }
+    if (!checkUserExists) {
+      throw new HttpException(
+        'User tidak ditemukan',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const checkPassword = await compare(
+      payload.password,
+      checkUserExists.password,
+    );
+    if (checkPassword) {
+      return this._Success('Login Success', checkUserExists);
+    } else {
+      throw new HttpException(
+        'email dan password tidak sama',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+  }
+}
