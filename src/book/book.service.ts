@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { ResponsePagination, ResponseSuccess } from './interface';
+import { ResponsePagination, ResponseSuccess } from '../interface';
 import { createBookArrayDto, createBookDto, updateBookDto, DeleteBooksDto, deleteBookDto, FindBookDto } from './book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './book.entity';
@@ -12,12 +12,12 @@ export class BookService extends BaseResponse {
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
   ) {
     super()
-   }
+  }
 
   async getAllBooks(findBookDto: FindBookDto): Promise<ResponsePagination> {
     const { page, pageSize, title, author, from_year, to_year, limit } = findBookDto;
-    
-    
+
+
     const filter: {
       [key: string]: any;
     } = {};
@@ -39,12 +39,12 @@ export class BookService extends BaseResponse {
 
     const total = await this.bookRepository.count(
       {
-        where:filter
+        where: filter
       }
     );
-    
+
     const result = await this.bookRepository.find({
-      where:filter,
+      where: filter,
       skip: limit,
       take: Number(pageSize),
     });
@@ -62,8 +62,8 @@ export class BookService extends BaseResponse {
     //     remaining_page: total_page - Number(page)
     //   }
     // }
-    const remaining_page = total_page- Number(page)
-    return this._Pagination('Buku ditemukan!',result,total,page,pageSize,total_page,remaining_page)
+    const remaining_page = total_page - Number(page)
+    return this._Pagination('Buku ditemukan!', result, total, page, pageSize, total_page, remaining_page)
   }
 
 
@@ -101,7 +101,7 @@ export class BookService extends BaseResponse {
     // };
 
 
-    return this._Success('Data buku ditemukan',book)
+    return this._Success('Data buku ditemukan', book)
   }
 
 
@@ -124,9 +124,9 @@ export class BookService extends BaseResponse {
     //   status: 'success',
     //   message: 'Berhasil update buku',
     //   data: update,
-      // }
+    // }
 
-      return this._Success('Berhasil mengupdate Buku',update)
+    return this._Success('Berhasil mengupdate Buku', update)
   }
 
   async deleteBook(id: number): Promise<ResponseSuccess> {
@@ -164,7 +164,7 @@ export class BookService extends BaseResponse {
       //   message: `Berhasil menambahkan buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,
       //   data: payload
       // }
-      return this._Success(`Berhasil menambahkan buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`,payload)
+      return this._Success(`Berhasil menambahkan buku sebanyak ${berhasil} dan gagal sebanyak ${gagal}`, payload)
     } catch {
       throw new HttpException('ada kesalahan', HttpStatus.BAD_REQUEST)
     }

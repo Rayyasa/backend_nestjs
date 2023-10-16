@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException,HttpException,HttpStatus } from '@nestjs/common';
-import { ResponseSuccess } from 'src/book/interface';
-import { createUserDto, updateUserDto,createUserArrayDto,DeleteUserArrayDto } from './user.dto';
+import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { ResponseSuccess } from 'src/interface';
+import { createUserDto, updateUserDto, createUserArrayDto, DeleteUserArrayDto } from './user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -9,17 +9,17 @@ export class UserService {
 
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) {}
- async getUsers(): Promise <ResponseSuccess> {
-  const user = await this.userRepository.find();
-  return {
-    status:'Success',
-    message: 'User ditemukan',
-    data: user,
+  ) { }
+  async getUsers(): Promise<ResponseSuccess> {
+    const user = await this.userRepository.find();
+    return {
+      status: 'Success',
+      message: 'User ditemukan',
+      data: user,
+    }
   }
-}
 
- async createUsers(createUserDto:createUserDto): Promise <ResponseSuccess> {
+  async createUsers(createUserDto: createUserDto): Promise<ResponseSuccess> {
     const { id,
       nama,
       email,
@@ -27,31 +27,31 @@ export class UserService {
       tanggal_lahir,
       status } = createUserDto;
 
-      try {
-        await this.userRepository.save({
-          nama:nama,
-          umur:umur,
-          tanggal_lahir:tanggal_lahir,
-          email:email
-        });
-        return {
-          status: 'Oke',
-          message: 'Berhasil menambahkan user!'
-        }
-      } catch {
-        throw new HttpException('Ada kesalahan', HttpStatus.BAD_REQUEST)
+    try {
+      await this.userRepository.save({
+        nama: nama,
+        umur: umur,
+        tanggal_lahir: tanggal_lahir,
+        email: email
+      });
+      return {
+        status: 'Oke',
+        message: 'Berhasil menambahkan user!'
       }
-    
+    } catch {
+      throw new HttpException('Ada kesalahan', HttpStatus.BAD_REQUEST)
+    }
+
   }
 
- async getDetail(id: number): Promise <ResponseSuccess> {
+  async getDetail(id: number): Promise<ResponseSuccess> {
     const detailUser = await this.userRepository.findOne({
       where: {
         id,
       },
     });
 
-    if(detailUser === null) {
+    if (detailUser === null) {
       throw new NotFoundException(`User dengan id ${id} tidak ditemukan`);
     }
     return {
@@ -98,17 +98,17 @@ export class UserService {
     };
   }
 
-  async bulkCreate(payload: createUserArrayDto) : Promise <ResponseSuccess> {
+  async bulkCreate(payload: createUserArrayDto): Promise<ResponseSuccess> {
     try {
       let berhasil = 0;
       let gagal = 0;
-      await Promise.all (
+      await Promise.all(
         payload.data.map(async (item) => {
           try {
             await this.userRepository.save(item);
             berhasil += 1;
           } catch {
-           gagal +=1;
+            gagal += 1;
           }
         })
       )
@@ -121,20 +121,20 @@ export class UserService {
       throw new HttpException('Ada kesalahan', HttpStatus.BAD_REQUEST)
     }
   };
-  async bulkDelete(payload: DeleteUserArrayDto) : Promise <ResponseSuccess> {
+  async bulkDelete(payload: DeleteUserArrayDto): Promise<ResponseSuccess> {
     try {
       let success = 0;
       let fail = 0;
-      await Promise.all (
+      await Promise.all(
         payload.data.map(async (item) => {
           try {
-         const result =   await this.userRepository.delete(item);
+            const result = await this.userRepository.delete(item);
 
-         if(result.affected === 0) {
-          fail = fail + 1;
-         } else {
-           success = success + 1;
-         }
+            if (result.affected === 0) {
+              fail = fail + 1;
+            } else {
+              success = success + 1;
+            }
           } catch {
             fail = fail + 1;
           }

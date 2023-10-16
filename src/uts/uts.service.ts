@@ -1,5 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { ResponseSuccess } from 'src/book/interface';
+import { ResponseSuccess } from 'src/interface';
 import { PembelianMobilDTO, updateMobilDto, createMobilArrayDto, DeleteMobilsDto, FindCarDto } from './dto/utsdto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PembelianMobil } from './uts.entity';
