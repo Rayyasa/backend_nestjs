@@ -6,7 +6,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: "root",
   password: "",
   database: "belajar_projek_xi",
-  entities: ["dist/**/*.entity{.ts,.js}"],
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: true,
-  logging: true,
 };
