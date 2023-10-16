@@ -6,11 +6,12 @@ import { Repository } from 'typeorm';
 import { ResponseSuccess } from 'src/interface';
 import { LoginDto, RegisterDto } from './auth.dto';
 import { compare, hash } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class AuthService extends BaseResponse {
-  constructor(@InjectRepository(User) private readonly authRepository: Repository<User>) {
+  constructor(@InjectRepository(User) private readonly authRepository: Repository<User>, private jwtService:JwtService) {
     super();
   }
 
