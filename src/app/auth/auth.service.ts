@@ -7,14 +7,20 @@ import { ResponseSuccess } from 'src/interface';
 import { LoginDto, RegisterDto } from './auth.dto';
 import { compare, hash } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { jwt_config } from 'src/config/jwt.config';
 
 
 @Injectable()
 export class AuthService extends BaseResponse {
-  constructor(@InjectRepository(User) private readonly authRepository: Repository<User>, private jwtService:JwtService) {
+  constructor(@InjectRepository(User) private readonly authRepository: Repository<User>, private jwtService: JwtService) {
     super();
   }
-
+  generateJWT(payload: jwtPayload, expiresIn: string | number, token: string) {
+    return this.jwtService.sign(payload, {
+      secret: token,
+      expiresIn: expiresIn,
+    });
+  }
   async register(payload: RegisterDto): Promise<ResponseSuccess> {
     const checkUserExists = await this.authRepository.findOne({
       where: {
@@ -26,10 +32,10 @@ export class AuthService extends BaseResponse {
     }
 
 
-    console.log('payload sebelum hash',payload);
+    console.log('payload sebelum hash', payload);
     payload.password = await hash(payload.password, 12);
     console.log('payload sesudah hash', payload);
-await this.authRepository.save(payload);
+    await this.authRepository.save(payload);
 
     return this._Success("Register Berhasil");
   }
@@ -58,8 +64,33 @@ await this.authRepository.save(payload);
       payload.password,
       checkUserExists.password,
     );
+
     if (checkPassword) {
-      return this._Success('Login Success', checkUserExists);
+      const jwtPayload: jwtPayload = {
+        id: checkUserExists.id,
+        nama: checkUserExists.nama,
+        email: checkUserExists.email,
+      };
+
+      const access_token = await this.generateJWT(
+        jwtPayload,
+        '1d',
+        jwt_config.access_token_secret,
+      );
+      const refresh_token = await this.generateJWT(
+        jwtPayload,
+        '7d',
+        jwt_config.refresh_token_secret,
+      );
+      await this.authRepository.save({
+        refresh_token: refresh_token,
+        id: checkUserExists.id,
+      });
+      return this._Success('Login Success', {
+        ...checkUserExists,
+        access_token: access_token,
+        refresh_token: refresh_token,
+      });
     } else {
       throw new HttpException(
         'email dan password tidak sama',
@@ -67,4 +98,14 @@ await this.authRepository.save(payload);
       );
     }
   }
+  async myProfile(id: number): Promise<ResponseSuccess> {
+    const user = await this.authRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    return this._Success('OK', user);
+  }
+
 }
