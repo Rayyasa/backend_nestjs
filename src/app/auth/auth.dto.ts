@@ -33,3 +33,8 @@ export class RegisterDto extends PickType(UsersDto,[
 ]) {}
 
 export class LoginDto extends PickType(UsersDto, ['email', 'password']) {}
+export class ResetPasswordDto {
+  @IsString()
+  @MinLength(8)
+  new_password: string;
+}
