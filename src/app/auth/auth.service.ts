@@ -8,14 +8,14 @@ import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { compare, hash } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { jwt_config } from 'src/config/jwt.config';
-import { ResetPassword } from './reset_password.entity';
+import { ResetPassword } from '../mail/reset_password.entity';
 import { MailService } from '../mail/mail.service';
 import { randomBytes } from 'crypto';
 
 
 @Injectable()
 export class AuthService extends BaseResponse {
-  constructor(@InjectRepository(User) private readonly authRepository: Repository<User>, @InjectRepository(ResetPassword) private readonly resetPasswordRepository: Repository<ResetPassword>, private jwtService: JwtService,private mailService:MailService) {
+  constructor(@InjectRepository(User) private readonly authRepository: Repository<User>, @InjectRepository(ResetPassword) private readonly resetPasswordRepository: Repository<ResetPassword>, private jwtService: JwtService, private mailService: MailService) {
     super();
   }
   generateJWT(payload: jwtPayload, expiresIn: string | number, token: string) {
@@ -34,7 +34,6 @@ export class AuthService extends BaseResponse {
       throw new HttpException("User already registered", HttpStatus.FOUND);
     }
 
-
     console.log('payload sebelum hash', payload);
     payload.password = await hash(payload.password, 12);
     console.log('payload sesudah hash', payload);
@@ -43,46 +42,52 @@ export class AuthService extends BaseResponse {
     return this._Success("Register Berhasil");
   }
 
-  async forgotPassword(email:string) :Promise <ResponseSuccess> {
+  async getAllUser(): Promise<ResponseSuccess> {
+    const result = await this.authRepository.find();
+    return {
+      status: 'Success',
+      message: 'list user ditemukan',
+      data: result,
+    };
+  }
+  async forgotPassword(email: string): Promise<ResponseSuccess> {
     const user = await this.authRepository.findOne({
       where: {
-        email: email
+        email: email,
       },
     });
 
-    if(!user) {
-      throw new HttpException('Email tidak ditemukan',HttpStatus.UNPROCESSABLE_ENTITY);
+    if (!user) {
+      throw new HttpException(
+        'Email tidak ditemukan',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
-
-    const token = randomBytes(32).toString('hex');
-    const link = `http://localhost:5002/auth/reset-password/${user.id}/${token}`;
+    const token = randomBytes(32).toString('hex'); 
+    const link = `http://localhost:5002/auth/reset-password/${user.id}/${token}`; 
     await this.mailService.sendForgotPassword({
-      email:email,
-      name:user.nama,
-      link:link
+      email: email,
+      name: user.nama,
+      link: link,
     });
 
     const payload = {
       user: {
-        id:user.id
+        id: user.id,
       },
-      token:token
+      token: token,
     };
 
-    await this.resetPasswordRepository.save(payload);
-    return this._Success('Silahkan cek email anda')
+    await this.resetPasswordRepository.save(payload); 
 
-
-
+    return this._Success('Silahkan Cek Email');
   }
-
-
   async resetPassword(
     user_id: number,
     token: string,
     payload: ResetPasswordDto,
   ): Promise<ResponseSuccess> {
-    const userToken = await this.resetPasswordRepository.findOne({ 
+    const userToken = await this.resetPasswordRepository.findOne({    
       where: {
         token: token,
         user: {
@@ -94,12 +99,12 @@ export class AuthService extends BaseResponse {
     if (!userToken) {
       throw new HttpException(
         'Token tidak valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.UNPROCESSABLE_ENTITY,  
       );
     }
 
-    payload.new_password = await hash(payload.new_password, 12);
-    await this.authRepository.save({
+    payload.new_password = await hash(payload.new_password, 12); 
+    await this.authRepository.save({  
       password: payload.new_password,
       id: user_id,
     });
@@ -111,10 +116,6 @@ export class AuthService extends BaseResponse {
 
     return this._Success('Reset Passwod Berhasil, Silahkan login ulang');
   }
-
-
-
-
 
   async login(payload: LoginDto): Promise<ResponseSuccess> {
     const checkUserExists = await this.authRepository.findOne({

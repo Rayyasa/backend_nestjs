@@ -9,7 +9,7 @@ import { jwt_config } from 'src/config/jwt.config';
 import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
 import { JwtRefreshTokenStrategy } from './jwtRefreshToken.strategy';
 import { MailModule } from '../mail/mail.module';
-import { ResetPassword } from './reset_password.entity';
+import { ResetPassword } from './../mail/reset_password.entity';
 
 @Module({
   imports: [
@@ -28,6 +28,6 @@ import { ResetPassword } from './reset_password.entity';
     MailModule, // import disini
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAccessTokenStrategy,JwtRefreshTokenStrategy],
+  providers: [AuthService, JwtAccessTokenStrategy, JwtRefreshTokenStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

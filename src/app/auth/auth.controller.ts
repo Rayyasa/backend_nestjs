@@ -7,7 +7,10 @@ import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) { }
-
+  @Get('/list')
+  findAllUser() {
+    return this.authService.getAllUser();
+  }
   @Post('register')
   async register(@Body() payload: RegisterDto) {
     return this.authService.register(payload);
@@ -19,7 +22,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @Get('profile')
   async profile(@Req() req) {
-    const {id} = req.user;
+    const { id } = req.user;
     console.log('informasi login user', req.user);
     return this.authService.myProfile(Number(id));
   }
@@ -31,12 +34,13 @@ export class AuthController {
     const id = req.headers.id;
     return this.authService.refreshToken(+id, token);
   }
+
   @Post('lupa-password')
   async forgotPassowrd(@Body('email') email: string) {
     console.log('email', email);
     return this.authService.forgotPassword(email);
   }
-  @Post('reset-password/:user_id/:token')
+  @Post('reset-password/:user_id/:token')  // url yang dibuat pada endpont harus sama dengan ketika kita membuat link pada service forgotPassword
   async resetPassword(
     @Param('user_id') user_id: string,
     @Param('token') token: string,

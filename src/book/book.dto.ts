@@ -6,7 +6,7 @@ export class BookDto {
   id: number;
 
   @IsNotEmpty()
-  @Length(4, 100)
+  @Length(1,100)
   title: string;
 
   @IsNotEmpty()

@@ -7,7 +7,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { ResetPassword } from './reset_password.entity';
+import { ResetPassword } from './../mail/reset_password.entity';
 
 @Entity()
 export class User extends BaseEntity {
