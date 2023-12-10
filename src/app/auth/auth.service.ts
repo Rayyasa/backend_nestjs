@@ -11,6 +11,7 @@ import { jwt_config } from 'src/config/jwt.config';
 import { ResetPassword } from '../mail/reset_password.entity';
 import { MailService } from '../mail/mail.service';
 import { randomBytes } from 'crypto';
+import { addHours } from 'date-fns';
 
 
 @Injectable()
@@ -63,8 +64,8 @@ export class AuthService extends BaseResponse {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const token = randomBytes(32).toString('hex'); 
-    const link = `http://localhost:5002/auth/reset-password/${user.id}/${token}`; 
+    const token = randomBytes(32).toString('hex'); // membuat token
+    const link = `http://localhost:5002/auth/reset-password/${user.id}/${token}`; //membuat link untuk reset password
     await this.mailService.sendForgotPassword({
       email: email,
       name: user.nama,
@@ -78,7 +79,7 @@ export class AuthService extends BaseResponse {
       token: token,
     };
 
-    await this.resetPasswordRepository.save(payload); 
+    await this.resetPasswordRepository.save(payload); // menyimpan token dan id ke tabel reset password
 
     return this._Success('Silahkan Cek Email');
   }
@@ -87,7 +88,7 @@ export class AuthService extends BaseResponse {
     token: string,
     payload: ResetPasswordDto,
   ): Promise<ResponseSuccess> {
-    const userToken = await this.resetPasswordRepository.findOne({    
+    const userToken = await this.resetPasswordRepository.findOne({    //cek apakah user_id dan token yang sah pada tabel reset password
       where: {
         token: token,
         user: {
@@ -99,16 +100,26 @@ export class AuthService extends BaseResponse {
     if (!userToken) {
       throw new HttpException(
         'Token tidak valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,  
+        HttpStatus.UNPROCESSABLE_ENTITY,  // jika tidak sah , berikan pesan token tidak valid
+      );
+    }
+    const currentDateTime = new Date();
+    const expirationDateTime = new Date(userToken.created_at.getTime() + 60 * 60 * 1000); 
+
+    if (currentDateTime > expirationDateTime) {
+      throw new HttpException(
+        'Token telah kadaluwarsa',
+        HttpStatus.FORBIDDEN,
       );
     }
 
-    payload.new_password = await hash(payload.new_password, 12); 
-    await this.authRepository.save({  
+
+    payload.new_password = await hash(payload.new_password, 12); //hash password
+    await this.authRepository.save({  // ubah password lama dengan password baru
       password: payload.new_password,
       id: user_id,
     });
-    await this.resetPasswordRepository.delete({ 
+    await this.resetPasswordRepository.delete({ // hapus semua token pada tabel reset password yang mempunyai user_id yang dikirim, agar tidak bisa digunakan kembali
       user: {
         id: user_id,
       },
@@ -236,3 +247,4 @@ export class AuthService extends BaseResponse {
   }
 
 }
+
