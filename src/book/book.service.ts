@@ -63,7 +63,7 @@ export class BookService extends BaseResponse {
     //   }
     // }
     const remaining_page = total_page - Number(page)
-    return this._Pagination('Buku ditemukan!', result, total, page, pageSize, total_page, remaining_page)
+    return this._Pagination('Buku ditemukan!', result, total, page, pageSize)
   }
 
 

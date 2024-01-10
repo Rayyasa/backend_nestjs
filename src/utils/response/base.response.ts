@@ -8,7 +8,7 @@ class BaseResponse {
       data: data || {}
     }
   }
-  _Pagination(message: string, data: any, totalData: number, page: number, pageSize: number, total_page: number, remaining_page: number): ResponsePagination {
+  _Pagination(message: string, data: any, totalData: number, page: number, pageSize: number): ResponsePagination {
     return {
       status: 'Success',
       message: message,
@@ -17,8 +17,6 @@ class BaseResponse {
         total: totalData,
         page: page,
         pageSize: pageSize,
-        total_page: total_page,
-        remaining_page: remaining_page
       }
     }
   }
