@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import BaseResponse from 'src/utils/response/base.response';
 import { Kategori } from './kategori.entity';
 import { CreateKategoriArrayDto, CreateKategoriDto, findAllKategori, UpdateKategoriDto } from './kategori.dto';
-import { ResponsePagination, ResponseSuccess } from  'src/interface/index';
+import { ResponsePagination, ResponseSuccess } from 'src/interface/index';
 import { Like, Repository } from 'typeorm'
 import { REQUEST } from '@nestjs/core';
 import { User } from '../auth/auth.entity';
@@ -21,7 +21,7 @@ export class KategoriService extends BaseResponse {
   async create(payload: CreateKategoriDto): Promise<ResponseSuccess> {
     try {
       await this.kategoriRepository.save(payload);
-      return this._Success('Oke', payload.created_by.id);
+      return this._Success('Oke', this.req.user.user_id);
     } catch {
       throw new HttpException('Ada kesalahan', HttpStatus.UNPROCESSABLE_ENTITY)
     }
@@ -43,7 +43,7 @@ export class KategoriService extends BaseResponse {
     const detailKategori = await this.kategoriRepository.findOne({
       where: {
         id,
-      }, 
+      },
       relations: ['created_by', 'updated_by'],
       select: {
         id: true,
