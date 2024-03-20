@@ -4,7 +4,7 @@ export const InjectUpdatedBy = createParamDecorator(
   (data: any, ctx: ExecutionContext) => {
     const req = ctx.switchToHttp().getRequest();
 
-    req.body.updated_by = { id: req.user.id };
+    req.body.updated_by = { id: req.user.id, nama: req.user.nama };
 
     return req.body;
   },

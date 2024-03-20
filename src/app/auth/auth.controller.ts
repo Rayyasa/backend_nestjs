@@ -1,12 +1,17 @@
-import { Controller, Post, Body, UseGuards, Get, Req, Param } from '@nestjs/common';
-import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
+import { Controller, Post, Body, UseGuards, Get, Req, Param, Delete, Put } from '@nestjs/common';
+import { LoginDto, LoginGoogleDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { JwtGuard, JwtGuardRefreshToken } from './auth.guard';
 import { JwtAccessTokenStrategy } from './jwtAccessToken.strategy';
+import { ResponseSuccess } from 'src/interface/response.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) { }
+  @Delete('/delete/:id')
+  async deleteUser(@Param('id') id: string): Promise<ResponseSuccess> {
+    return this.authService.deleteUser(Number(id));
+  }
   @Get('/list')
   findAllUser() {
     return this.authService.getAllUser();
@@ -18,6 +23,15 @@ export class AuthController {
   @Post('login')
   async login(@Body() payload: LoginDto) {
     return this.authService.login(payload);
+  }
+
+  @Post('login-google')
+  async logingoogle(@Body() payload: LoginGoogleDto) {
+    return this.authService.loginGoogle(payload)
+  }
+  @Get('getdatagoogle/:id')
+  async getData(@Param('id') id: string) {
+    return this.authService.getDataGoogle(id);
   }
   @UseGuards(JwtGuard)
   @Get('profile')
@@ -48,5 +62,6 @@ export class AuthController {
   ) {
     return this.authService.resetPassword(+user_id, token, payload);
   }
+
 }
 

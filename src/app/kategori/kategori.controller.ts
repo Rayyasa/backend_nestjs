@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, ValidationPipe } from '@nestjs/common';
 import { JwtGuard } from '../auth/auth.guard';
 import { KategoriService } from './kategori.service';
 import { CreateKategoriArrayDto, CreateKategoriDto, findAllKategori, UpdateKategoriDto } from './kategori.dto';
@@ -15,10 +15,11 @@ export class KategoriController {
 
   @Post('create')
   async create(@InjectCreatedBy() payload: CreateKategoriDto) {
+    console.log('payload', payload);
     return this.kategoriService.create(payload);
   }
   @Put('update/:id')
-  async update(@Param('id') id: string, @InjectUpdatedBy() payload: UpdateKategoriDto) {
+  async update(@Param('id') id: string, @InjectUpdatedBy(new ValidationPipe()) payload: UpdateKategoriDto) {
     return this.kategoriService.updateKategori(payload, Number(id));
   }
 
@@ -37,7 +38,13 @@ export class KategoriController {
     return this.kategoriService.deleteKategori(+id);
   }
   @Post('/create/bulk')
-  bulkCreateBook(@Body() payload: CreateKategoriArrayDto) {
+  bulkCreateBook(@InjectCreatedBy() payload: CreateKategoriArrayDto) {
     return this.kategoriService.bulkCreate(payload);
   }
+
+  @Delete('deleteAll')
+  deleteAll() {
+    return this.kategoriService.clearData();
+  }
+
 }

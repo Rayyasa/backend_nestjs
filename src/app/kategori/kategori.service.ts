@@ -20,6 +20,7 @@ export class KategoriService extends BaseResponse {
   }
   async create(payload: CreateKategoriDto): Promise<ResponseSuccess> {
     try {
+      console.log('req', this.req.user);
       await this.kategoriRepository.save(payload);
       return this._Success('Oke', this.req.user.user_id);
     } catch {
@@ -33,10 +34,11 @@ export class KategoriService extends BaseResponse {
     if (!checkKategori) {
       throw new HttpException('Kategori tidak ditemukan', HttpStatus.NOT_FOUND)
     }
+    Object.assign(checkKategori, payload);
     const updateKategori = await this.kategoriRepository.save({
       ...payload, id: id
     });
-    return this._Success('Berhasil mengUpdate', updateKategori)
+    return this._Success('Berhasil mengupdate kategori', updateKategori)
   }
 
   async getDetail(id: number): Promise<ResponseSuccess> {
@@ -70,11 +72,14 @@ export class KategoriService extends BaseResponse {
 
 
   async getAllCategory(query: findAllKategori): Promise<ResponsePagination> {
-    const { page, pageSize, limit, nama_kategori } = query;
+    const { page, pageSize, limit, nama_kategori, nama_user } = query;
 
     const filterQuery: any = {}
     if (nama_kategori) {
       filterQuery.nama_kategori = Like(`%${nama_kategori}%`);
+    }
+    if (nama_user) {
+      filterQuery.created_by = { nama: Like(`%${nama_user}%`) };
     }
     const total = await this.kategoriRepository.count({
       where: filterQuery,
@@ -101,6 +106,14 @@ export class KategoriService extends BaseResponse {
     return this._Pagination('OK', result, total, page, pageSize);
   }
 
+
+  async clearData(): Promise<ResponseSuccess> {
+    await this.kategoriRepository.clear();
+    return {
+      status: 'Success',
+      message: 'Berhasil menghapus semua data kategori',
+    };
+  }
 
   async deleteKategori(id: number): Promise<ResponseSuccess> {
     const check = await this.kategoriRepository.findOne({
