@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import BaseResponse from 'src/utils/response/base.response';
-import { Konsumen } from './konsume.entity';
+import { Konsumen } from './konsumen.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { ResponsePagination, ResponseSuccess } from 'src/interface/response.interface';

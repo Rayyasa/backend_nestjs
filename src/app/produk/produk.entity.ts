@@ -5,9 +5,11 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../auth/auth.entity';
 import { Kategori } from '../kategori/kategori.entity';
+import { OrderDetail } from '../order_detail/order_detail.entity';
 
 @Entity()
 export class Produk extends BaseEntity {
@@ -34,6 +36,12 @@ export class Produk extends BaseEntity {
 
   @Column({ nullable: true })
   foto: string;
+
+  @OneToMany(() => OrderDetail, (v) => v.produk, {
+    onDelete: 'CASCADE',
+    cascade: ['insert', 'update'],
+  })
+  order_detail: OrderDetail[];
 
   @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'created_by' })

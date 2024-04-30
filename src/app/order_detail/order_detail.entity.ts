@@ -1,4 +1,3 @@
-import { User } from 'src/app/auth/auth.entity';
 import {
   Entity,
   BaseEntity,
@@ -7,31 +6,29 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { User } from '../auth/auth.entity';
+import { Produk } from '../produk/produk.entity';
+import { Order } from '../order/order.entity';
 
 @Entity()
-export class Konsumen extends BaseEntity {
+export class OrderDetail extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: false })
-  nama_konsumen: string;
+  jumlah: number;
 
-  @Column({ type: 'text', nullable: false })
-  alamat_konsumen: string;
+  @ManyToOne(() => Produk, (v) => v.order_detail, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'produk_id' })
+  produk: Produk;
 
-  @Column({ unique: true, nullable: false })
-  email: string;
-
-  @Column({ nullable: false })
-  nomor_handphone: string;
+  @ManyToOne(() => Order, (v) => v.order_detail, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'order_id' })
+  order: Order;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })
   created_by: User;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'updated_by' })
-  updated_by: User;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

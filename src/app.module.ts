@@ -15,11 +15,13 @@ import { join } from 'path';
 import { KonsumenModule } from './app/konsumen/konsumen.module';
 import { UniqueValidator } from './utils/validator/unique.validator';
 import { ProfileModule } from './app/profile/profile.module';
+import { OrderModule } from './app/order/order.module';
+import { OrderDetailModule } from './app/order_detail/order_detail.module';
 
 @Module({
   imports: [ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'public'),
-  }), TypeOrmModule.forRoot(typeOrmConfig), LatihanModule, BookModule, AuthModule, MailModule, KategoriModule, ProdukModule, KonsumenModule, ProfileModule],
+  }), TypeOrmModule.forRoot(typeOrmConfig), LatihanModule, BookModule, AuthModule, MailModule, KategoriModule, ProdukModule, KonsumenModule, ProfileModule, OrderModule, OrderDetailModule],
   controllers: [AppController, UploadController],
   providers: [AppService, UniqueValidator],
 })
