@@ -197,7 +197,7 @@ export class AuthService extends BaseResponse {
         ...checkUserExists,
         access_token: access_token,
         refresh_token: refresh_token,
-        role: 'siswa',
+        role: 'admin',
       });
     } else {
       throw new HttpException(

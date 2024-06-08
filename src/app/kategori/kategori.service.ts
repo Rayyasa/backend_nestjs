@@ -22,7 +22,7 @@ export class KategoriService extends BaseResponse {
     try {
       console.log('req', this.req.user);
       await this.kategoriRepository.save(payload);
-      return this._Success('Oke', this.req.user.user_id);
+      return this._Success('Berhasil menambahkan Kategori', this.req.user.user_id);
     } catch {
       throw new HttpException('Ada kesalahan', HttpStatus.UNPROCESSABLE_ENTITY)
     }

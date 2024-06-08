@@ -108,6 +108,7 @@ export class ProdukService extends BaseResponse {
       where: {
         id,
       },
+      relations: ['kategori']
     });
 
     if (detailBook === null) {

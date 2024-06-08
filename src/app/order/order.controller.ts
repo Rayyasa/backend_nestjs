@@ -29,7 +29,19 @@ export class OrderController {
   async listOrder(@Pagination() query: findAllOrderDto) {
     return this.orderService.findAll(query);
   }
-
-
-  
+  @Get('detail/:id')
+  async detailOrder(@Param('id') id: string) {
+    return this.orderService.findById(+id);
+  }
+  @Put('update/:id')
+  async updateOrder(
+    @Param('id') id: number,
+    @InjectUpdatedBy() payload: UpdateOrderDto,
+  ) {
+    return this.orderService.updateOrder(+id, payload);
+  }
+  @Delete('delete/:id')
+  async deleteOrder(@Param('id') id: number) {
+    return this.orderService.deleteOrder(+id);
+  }
 }

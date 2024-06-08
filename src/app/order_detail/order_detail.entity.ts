@@ -35,4 +35,7 @@ export class OrderDetail extends BaseEntity {
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  @Column({ type: 'double', precision: 18, scale: 2, nullable: true })
+  jumlah_harga: number;
 }

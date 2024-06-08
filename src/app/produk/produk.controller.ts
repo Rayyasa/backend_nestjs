@@ -9,7 +9,7 @@ import { Pagination } from 'src/utils/decorator/pagination.decorator';
 export class ProdukController {
   constructor(private produkService: ProdukService) { }
 
-  @Post('create-bulk')
+  @Post('create/bulk')
   async createBulk(@Body() payload: CreateProdukArrayDto) {
     return this.produkService.createBulk(payload);
   }

@@ -9,6 +9,9 @@ export class OrderDetailDto {
   @IsNumber()
   jumlah: number;
 
+  @IsNumber()
+  jumlah_harga: number;
+
   @IsObject()
   produk: { id: number };
 

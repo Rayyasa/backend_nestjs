@@ -19,7 +19,7 @@ export class KonsumenService extends BaseResponse {
     try {
       await this.konsumenRepository.save(payload);
 
-      return this._Success('OK');
+      return this._Success('Berhasil Menambahkan Konsumen');
     } catch (err) {
       console.log('err', err);
       throw new HttpException('Ada Kesalahan', HttpStatus.UNPROCESSABLE_ENTITY);
